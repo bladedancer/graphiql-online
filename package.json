@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rm -Rf ./dist",
     "build": "webpack",
-    "dev": "webpack-dev-server",
+    "dev": "webpack-dev-server  --host 0.0.0.0 --port 9080",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
