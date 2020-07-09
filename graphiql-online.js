@@ -32923,9 +32923,10 @@ var _validUrl = __webpack_require__(429);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 var options = { method: 'post', headers: { 'Content-Type': 'application/json' } };
-var endpoint = 'https://api.graph.cool/simple/v1/ciyz901en4j590185wkmexyex'; // Initial
+var endpoint = 'https://gmatthews.dev.ampc.axwaytest.net/apis/graphql'; // Initial
+var authorization = 'authorization';
 
-var defaultQuery = '\n# Welcome to GraphiQL\n#\n# GraphiQL is an in-browser tool for writing, validating, and\n# testing GraphQL queries.\n#\n# Type queries into this side of the screen, and you will see intelligent\n# typeaheads aware of the current GraphQL type schema and live syntax and\n# validation errors highlighted within the text.\n#\n# GraphQL queries typically start with a "{" character. Lines that starts\n# with a # are ignored.\n#\n# An example GraphQL query might look like:\n#\n#     {\n#       field(arg: "value") {\n#         subField\n#       }\n#     }\n#\n# Keyboard shortcuts:\n#\n#       Run Query:  Ctrl-Enter (or press the play button above)\n#\n#   Auto Complete:  Ctrl-Space (or just start typing)\n#\n# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #\n# Default endpoint is an instance of https://www.graph.cool/\n# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #\n\nquery {\n  allUsers {\n    id\n    name\n  }\n}\n';
+var defaultQuery = '\n# Welcome to GraphiQL\n#\n# GraphiQL is an in-browser tool for writing, validating, and\n# testing GraphQL queries.\n#\n# Type queries into this side of the screen, and you will see intelligent\n# typeaheads aware of the current GraphQL type schema and live syntax and\n# validation errors highlighted within the text.\n#\n# GraphQL queries typically start with a "{" character. Lines that starts\n# with a # are ignored.\n#\n# An example GraphQL query might look like:\n#\n#     {\n#       field(arg: "value") {\n#         subField\n#       }\n#     }\n#\n# Keyboard shortcuts:\n#\n#       Run Query:  Ctrl-Enter (or press the play button above)\n#\n#   Auto Complete:  Ctrl-Space (or just start typing)\n# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #\n\nquery {\n  environments {\n    name\n  }\n}\n';
 
 var App = function (_React$Component) {
   (0, _inherits3['default'])(App, _React$Component);
@@ -32935,9 +32936,12 @@ var App = function (_React$Component) {
 
     var _this = (0, _possibleConstructorReturn3['default'])(this, (App.__proto__ || (0, _getPrototypeOf2['default'])(App)).call(this, props));
 
-    _this.createFetcher = function (endpoint) {
+    _this.createFetcher = function (auth, endpoint) {
       return function (param) {
-        return (0, _isomorphicFetch2['default'])(endpoint, (0, _extends3['default'])({}, options, { body: (0, _stringify2['default'])(param) })).then(function (response) {
+        return (0, _isomorphicFetch2['default'])(endpoint, (0, _extends3['default'])({}, options, {
+          headers: auth ? (0, _extends3['default'])({}, options.headers, { Authorization: 'Bearer ' + auth }) : (0, _extends3['default'])({}, options.headers),
+          body: (0, _stringify2['default'])(param)
+        })).then(function (response) {
           return response.json();
         });
       };
@@ -32946,7 +32950,14 @@ var App = function (_React$Component) {
     _this.changeEndpoint = function (endpoint) {
       return _this.setState({
         endpoint: endpoint,
-        fetcher: _this.createFetcher(endpoint)
+        fetcher: _this.createFetcher(_this.state.authorization, endpoint)
+      });
+    };
+
+    _this.changeAuthorization = function (authorization) {
+      return _this.setState({
+        authorization: authorization,
+        fetcher: _this.createFetcher(authorization, _this.state.endpoint)
       });
     };
 
@@ -32958,6 +32969,10 @@ var App = function (_React$Component) {
       return _this.validateAndChangeEndpoint(window.prompt('Choose the new endpoint', _this.state.endpoint));
     };
 
+    _this.enterToken = function () {
+      return _this.changeAuthorization(window.prompt('Choose the authorization token', _this.state.authorization));
+    };
+
     _this.setRef = function (c) {
       return _this.graphiql = c;
     };
@@ -32965,7 +32980,8 @@ var App = function (_React$Component) {
     _this.state = {
       defaultQuery: defaultQuery,
       endpoint: endpoint,
-      fetcher: _this.createFetcher(endpoint)
+      authorization: authorization,
+      fetcher: _this.createFetcher(authorization, endpoint)
     };
     return _this;
   }
@@ -32981,12 +32997,22 @@ var App = function (_React$Component) {
 
 
   /**
+   * Change auth and fetcher.
+   */
+
+
+  /**
    * validate end change endpoint, but only when new one is valid url.
    */
 
 
   /**
    * Promp user for new endpoint.
+   */
+
+
+  /**
+   * Promp user for new token.
    */
 
 
@@ -33008,7 +33034,7 @@ var App = function (_React$Component) {
             null,
             _react2['default'].createElement(
               'a',
-              { href: 'https://github.com/lucasconstantino/graphiql-online', title: 'See GraphiQL Online on GitHub' },
+              { href: 'https://github.com/bladedancer/graphiql-online', title: 'See GraphiQL Online on GitHub' },
               _react2['default'].createElement(
                 'svg',
                 { 'aria-hidden': 'true', className: 'octicon octicon-mark-github', height: '32', version: '1.1', viewBox: '0 0 16 16', width: '32' },
@@ -33019,6 +33045,11 @@ var App = function (_React$Component) {
           _react2['default'].createElement(
             _graphiql2['default'].Toolbar,
             null,
+            _react2['default'].createElement(_graphiql2['default'].Button, {
+              label: 'Authorize',
+              title: 'Authorize',
+              onClick: this.enterToken
+            }),
             _react2['default'].createElement(_graphiql2['default'].Button, {
               label: 'Change endpoint',
               title: 'Change endpoint',
